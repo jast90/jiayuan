@@ -1,0 +1,91 @@
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      th:fragment="nav">
+    <span>智慧家园系统</span>
+    <div class="navbar-nav flex-row ml-md-auto d-md-flex"/>
+        <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="javascript:;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span th:text="${session.s_sysUser.username}"></span>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="javascript:void(0);" th:data-userId="${session.s_sysUser.id}" th:data-usertype="${session.s_sysUser.userType}" id="userInfoA">个人信息</a>
+                    <a class="dropdown-item" href="javascript:void(0);" th:data-userId="${session.s_sysUser.id}" id="changePasswordA">修改密码</a>
+                    <a class="dropdown-item" href="/logout" >退出</a>
+                </div>
+            </li>
+        </ul>
+        </div>
+    <div id="userInfoHtml" style="display: none;">
+            <form id="userInfoUpdateForm">
+                <div class="form-group row">
+                    <label for="username" class="col-sm-2 col-form-label">用户名</label>
+                    <div class="col-sm-10">
+                        <input type="text" name="username" class="form-control" id="username" placeholder="用户名" disabled>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="realName" class="col-sm-2 col-form-label">真实名称</label>
+                    <div class="col-sm-10">
+                        <input type="text" name="realName" class="form-control" id="realName" placeholder="真实名称">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="age" class="col-sm-2 col-form-label">年龄</label>
+                    <div class="col-sm-10">
+                        <input type="number" name="age" class="form-control" id="age" placeholder="年龄">
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div id="changePasswordDiv" style="display: none;">
+            <form id="changePasswordForm">
+                <div class="form-group row">
+                    <label for="oldPassword" class="col-sm-2 col-form-label">旧密码</label>
+                    <div class="col-sm-10">
+                        <input type="password" name="oldPassword" class="form-control" id="oldPassword" placeholder="旧密码">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="newPassword" class="col-sm-2 col-form-label">新密码</label>
+                    <div class="col-sm-10">
+                        <input type="password" name="newPassword" class="form-control" id="newPassword" placeholder="新密码">
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <script>
+                var userType;
+                var useInfoHtml;
+                var changePasswordHtml;
+                var userId;
+                $(function(){
+                    userType=$("#userInfoA").data("usertype")
+                    useInfoHtml = $("#userInfoHtml").html()
+                    $("#userInfoHtml").empty()
+                    changePasswordHtml = $("#changePasswordDiv").html()
+                    $("#changePasswordDiv").empty()
+
+                    userId = $("#userInfoA").data("userid")
+                    $("#userInfoA").on("click",function(){
+                        editModal("updateUserInfoModal","修改用户信息",useInfoHtml,function(){
+                            var data = getFormData($("#userInfoUpdateForm"))
+                            updateUser({id:userId,...data})
+                        })
+                        getUser(userId,function(data){
+                            console.log(data)
+                            initFormValue($("#userInfoUpdateForm"),data.data)
+                        })
+                    })
+
+                    $("#changePasswordA").on("click",function(){
+                        editModal("changePasswordModal","修改密码",changePasswordHtml,function(){
+                            var data = getFormData($("#changePasswordForm"))
+                            changePassword({id:userId,...data})
+                        })
+                    })
+                })
+        </script>
+</html>

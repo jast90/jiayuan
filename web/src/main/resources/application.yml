@@ -1,0 +1,38 @@
+server:
+  port: 8888
+
+logging:
+  level:
+    root: debug
+
+spring:
+  application:
+    name: web
+  main:
+    allow-bean-definition-overriding: true
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  mvc:
+    format:
+      date-time: yyyy-MM-dd HH:mm:ss
+      date: yyyy-MM-dd
+      time: HH:mm:ss
+
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+
+feign:
+  compression:
+    request:
+      mime-types:
+        - application/json
+
+
+user:
+  default:
+    password: 123456

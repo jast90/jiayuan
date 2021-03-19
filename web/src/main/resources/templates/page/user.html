@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html
+		xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+		layout:decorate="page/include/layout"
+>
+	<head>
+		<title>用户</title>
+
+	</head>
+	<body >
+		<div class="content" layout:fragment="content">
+			<div id="toolbar">
+				<button class="btn btn-primary btn-sm" id="add" th:if="${session.s_sysUser.userType==1}">
+					<i class="fa fa-plus"></i>添加
+				</button>
+			</div>
+			<table id="table"></table>
+			<div id="addHtml" class="invisible">
+				<form id="addForm">
+					<div class="form-group row">
+						<label for="username" class="col-sm-2 col-form-label">用户名</label>
+						<div class="col-sm-10">
+							<input type="text" name="username" class="form-control" id="username" placeholder="用户名">
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="userType" class="col-sm-2 col-form-label">用户类型</label>
+						<div class="col-sm-10">
+							<select class="form-control" name="userType" id="userType">
+								<option value="1">管理员</option>
+								<option value="2">业主</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="realName" class="col-sm-2 col-form-label">真实名称</label>
+						<div class="col-sm-10">
+							<input type="text" name="realName" class="form-control" id="realName" placeholder="真实名称">
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="age" class="col-sm-2 col-form-label">年龄</label>
+						<div class="col-sm-10">
+							<input type="number" name="age" class="form-control" id="age" placeholder="年龄">
+						</div>
+					</div>
+				</form>
+			</div>
+			<script type="text/javascript">
+			var requestPage = pageUser;
+			var requestDetail = getUser;
+			var requestDelete = deleteUser;
+			var requestAdd = addUser;
+			var requestUpdate = updateUser;
+			var moduleName="用户"
+
+		 	var $table = $('#table')
+
+		 	function refreshTable(){
+		 		$table.bootstrapTable('refresh')
+		 	}
+			//删除
+			function remove(id){
+				confirm("deleteModal","删除"+moduleName,"确认删除",function(){
+					requestDelete(id,function(){
+						$("#deleteModal").modal("hide")
+						refreshTable()
+					})
+				})
+			}
+			var addHTML;
+			//修改
+			function update(id){
+				editModal("updateModal","修改"+moduleName,addHTML,function(){
+					var data = getFormData($("#addForm"))
+					requestUpdate({id:id,...data},function(res){
+						$("#updateModal").modal("hide")
+						refreshTable()
+					})
+				},function(){
+					requestDetail(id,function(data){
+						initFormValue($("#addForm"),data.data)
+					})
+				})
+			}
+			//添加
+			function add(){
+				editModal("addModal","添加"+moduleName,addHTML,function(){
+					var data = getFormData($("#addForm"))
+					requestAdd(data,function(res){
+						$("#addModal").modal("hide")
+						refreshTable()
+					})
+				},function(){
+
+				})
+
+			}
+
+
+		 	$(function(){
+		 		addHTML = $("#addHtml").html()
+		 		$("#addHtml").remove();
+				$('#table').bootstrapTable({
+				  ajax: function(params){
+				  	console.log(params)
+					var pageRequest = {
+						pageNumber: params.data.offset/params.data.limit+1,
+						pageSize: params.data.limit
+					}
+					requestPage(pageRequest,{search:params.data.search},function(data){
+						params.success({rows:data.data.content,total:data.data.total})
+					})
+				  },
+				  sidePagination:'server',
+				  locale: "zh-CN",
+				  pagination: true,
+				  toolbar: "#toolbar",
+				  search: true,
+				  searchHighlight: true,
+				  columns: [{
+					field: 'id',
+					title: '编号'
+				  }, {
+					field: 'username',
+					title: '用户名'
+				  }, {
+					field: 'userTypeDesc',
+					title: '用户类型'
+				  }, {
+					field: 'realName',
+					title: '真实姓名'
+				  }, {
+					field: 'age',
+					title: '年龄'
+				  }, {
+					field: 'createTime',
+					title: '创建日期'
+				  }, {
+					field: 'updateTime',
+					title: '更新日期'
+				  } ,
+				  {
+					title : '操作',
+					field : 'id',
+					align : 'center',
+					formatter : function(value, row, index) {
+						if(userType==1){
+							var e = '<a class="btn btn-primary btn-sm" href="javascript:void(0);" mce_href="#" title="编辑" onclick="update(\''
+								+ row.id
+								+ '\')"><i class="fa fa-edit"></i></a> ';
+							var d = ''
+							if(row.username!='admin'){
+							 	d = '<a class="btn btn-warning btn-sm" href="javascript:void(0);" title="删除"  mce_href="#" onclick="remove(\''
+									+ row.id
+									+ '\')"><i class="fa fa-minus"></i></a> ';
+							}
+
+							return e + d;
+						}
+						return '';
+					}
+				  }],
+				})
+				$("#add").on("click",function(){
+					add()
+				})
+			})
+		</script>
+		</div>
+	</body>
+</html>

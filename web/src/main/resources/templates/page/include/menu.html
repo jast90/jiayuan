@@ -1,0 +1,15 @@
+<div th:fragment="menu">
+ <!--   <button class="btn btn-link bd-search-docs-toggle d-md-none p-0 ml-3" type="button" data-toggle="collapse" data-target="#bd-docs-nav" aria-controls="bd-docs-nav" aria-expanded="false" aria-label="Toggle docs navigation">
+        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" role="img" focusable="false">
+            <title>菜单</title>
+            <path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg>
+    </button>-->
+<!--    <nav class="bd-links collapse" id="bd-docs-nav">-->
+    <nav>
+        <ul class="nav flex-column" >
+            <li class="nav-item" th:each="menu : ${session.menuList}">
+                <a class="nav-link active" aria-current="page" th:href="${menu.href}" th:text="${menu.name}">Active</a>
+            </li>
+        </ul>
+    </nav>
+</div>

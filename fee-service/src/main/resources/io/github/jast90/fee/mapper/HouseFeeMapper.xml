@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.github.jast90.fee.mapper.HouseFeeMapper">
+
+    <resultMap id="BaseResultMap" type="io.github.jast90.fee.entity.HouseFee">
+        <id column="id" property="id"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from house_fee
+        where id = #{id}
+    </delete>
+
+    <insert id="insert" parameterType="io.github.jast90.fee.entity.HouseFee">
+        insert into house_fee(house_id,water_fee,electric_fee,total_fee,start_datetime,end_datetime,pay_datetime,remark)
+        values(#{houseId},#{waterFee},#{electricFee},#{totalFee},#{startDatetime},#{endDatetime},#{payDatetime},#{remark})
+    </insert>
+
+    <update id="updateByPrimaryKey" parameterType="io.github.jast90.fee.entity.HouseFee">
+        update house_fee
+        set
+        house_id=#{houseId},water_fee=#{waterFee},electric_fee=#{electricFee},total_fee=#{totalFee},start_datetime=#{startDatetime},end_datetime=#{endDatetime},pay_datetime=#{payDatetime},remark=#{remark}
+        where id = #{id}
+    </update>
+
+    <update id="updateStatusToPaySuccess">
+        update house_fee
+        set status=2
+        where id=#{id}
+    </update>
+
+    <select id="selectByPrimaryKey" resultType="io.github.jast90.fee.entity.HouseFee" parameterType="java.lang.Long">
+        select id, create_time, update_time,house_id,water_fee,electric_fee,total_fee,start_datetime,end_datetime,pay_datetime,remark,status
+        from house_fee
+        where id=#{id}
+    </select>
+
+    <select id="selectAll" resultType="io.github.jast90.fee.entity.HouseFee">
+        select id, create_time, update_time,house_id,water_fee,electric_fee,total_fee,start_datetime,end_datetime,pay_datetime,remark,status
+        from house_fee
+    </select>
+
+    <select id="selectPage" resultType="io.github.jast90.fee.entity.HouseFee">
+        select id, create_time, update_time,house_id,water_fee,electric_fee,total_fee,start_datetime,end_datetime,pay_datetime,remark,status
+        from house_fee
+        <where>
+            <if test="condition.houseId>0">
+                house_id=#{condition.houseId}
+            </if>
+        </where>
+        order by id desc
+    </select>
+</mapper>

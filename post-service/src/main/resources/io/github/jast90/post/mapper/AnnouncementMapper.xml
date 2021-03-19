@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.github.jast90.post.mapper.AnnouncementMapper">
+
+    <resultMap id="BaseResultMap" type="io.github.jast90.post.entity.Announcement">
+        <id column="id" property="id"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from announcement
+        where id = #{id}
+    </delete>
+
+    <insert id="insert" parameterType="io.github.jast90.post.entity.Announcement">
+        insert into announcement(title,content,create_user_id)
+        values(#{title},#{content},#{createUserId})
+    </insert>
+
+    <update id="updateByPrimaryKey" parameterType="io.github.jast90.post.entity.Announcement">
+        update announcement
+        set title=#{title},content=#{content}
+        where id = #{id}
+    </update>
+
+    <select id="selectByPrimaryKey" resultType="io.github.jast90.post.entity.Announcement"
+            parameterType="java.lang.Long">
+        select id, create_time, update_time, title,content,create_user_id
+        from announcement
+        where id = #{id}
+    </select>
+
+    <select id="selectAll" resultType="io.github.jast90.post.entity.Announcement">
+        select id, create_time, update_time, title,content,create_user_id
+        from announcement
+    </select>
+
+    <select id="selectPage" resultType="io.github.jast90.post.entity.Announcement">
+        select id, create_time, update_time, title,content,create_user_id
+        from announcement
+        <where>
+            <if test="condition.search!=null">
+                (content like concat(#{condition.search},"%")
+                or title like concat(#{condition.search},"%"))
+            </if>
+        </where>
+        order by id desc
+    </select>
+</mapper>

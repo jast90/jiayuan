@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.github.jast90.post.mapper.MessageMapper">
+
+    <resultMap id="BaseResultMap" type="io.github.jast90.post.entity.Message">
+        <id column="id" property="id"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from message
+        where id = #{id}
+    </delete>
+
+    <insert id="insert" parameterType="io.github.jast90.post.entity.Message">
+        insert into message(parent_id,content,create_user_id)
+        values(#{parentId},#{content},#{createUserId})
+    </insert>
+
+    <update id="updateByPrimaryKey" parameterType="io.github.jast90.post.entity.Message">
+        update message
+        set parent_id=#{parentId},content=#{content}
+        where id = #{id}
+    </update>
+
+    <select id="selectByPrimaryKey" resultType="io.github.jast90.post.entity.Message" parameterType="java.lang.Long">
+        select id, create_time, update_time, parent_id,content,create_user_id
+        from message
+        where id = #{id}
+    </select>
+
+    <select id="selectAll" resultType="io.github.jast90.post.entity.Message">
+        select id, create_time, update_time, parent_id,content,create_user_id
+        from message
+    </select>
+
+    <select id="selectPage" resultType="io.github.jast90.post.entity.Message">
+        select id, create_time, update_time, parent_id,content,create_user_id
+        from message
+        <where>
+            parent_id = 0
+            <if test="condition.search!=null">
+                and content like concat(#{condition.search},"%")
+            </if>
+        </where>
+        order by id desc
+    </select>
+</mapper>

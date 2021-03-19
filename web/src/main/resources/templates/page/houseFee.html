@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html
+		xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+		layout:decorate="page/include/layout"
+>
+	<head>
+		<title>费用</title>
+	</head>
+	<body >
+		<div class="content" layout:fragment="content">
+			<div id="toolbar">
+				<button class="btn btn-primary btn-sm" id="add" th:if="${session.s_sysUser.userType==1 or session.s_sysUser.userType==3}">
+					<i class="fa fa-plus"></i>添加
+				</button>
+			</div>
+			<table id="table"></table>
+			<div id="addHtml" class="invisible">
+				<form id="addForm">
+					<div class="form-group row">
+						<label for="houseId" class="col-sm-2 col-form-label">房屋</label>
+						<div class="col-sm-10">
+							<select name="houseId" class="form-control" id="houseId"></select>
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="waterFee" class="col-sm-2 col-form-label">水费</label>
+						<div class="col-sm-10">
+							<input type="number" name="waterFee" class="form-control" id="waterFee"></input>
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="electricFee" class="col-sm-2 col-form-label">电费</label>
+						<div class="col-sm-10">
+							<input type="number" class="form-control"  name="electricFee" id="electricFee">
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="startDatetime" class="col-sm-2 col-form-label">开始时间</label>
+						<div class="col-sm-10">
+							<div class="input-group input-daterange">
+								<input type="text" name="startDatetime" class="form-control" id="startDatetime" >
+							</div>
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="endDatetime" class="col-sm-2 col-form-label">结束时间</label>
+						<div class="col-sm-10">
+							<div class="input-group input-daterange">
+								<input type="text" name="endDatetime" class="form-control" id="endDatetime" >
+							</div>
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="remark" class="col-sm-2 col-form-label">备注</label>
+						<div class="col-sm-10">
+							<input type="text" name="remark" class="form-control" id="remark" >
+						</div>
+					</div>
+				</form>
+			</div>
+			<script src="/static/qrcode.min.js"></script>
+			<script type="text/javascript">
+			var requestPage = pageHouseFee;
+			var requestDetail = getHouseFee;
+			var requestDelete = deleteHouseFee;
+			var requestAdd = addHouseFee;
+			var requestUpdate = updateHouseFee;
+
+			var moduleName="费用"
+
+		 	var $table = $('#table')
+
+		 	function initHouse(success){
+		 		houseSelect($("#houseId"),success)
+		 	}
+
+		 	function initDateTime(){
+		 		$('.input-daterange input').each(function() {
+					$(this).datepicker({
+						format: 'yyyy-mm-dd',
+						language: 'zh-CN'
+					});
+				});
+		 	}
+			//删除
+			function remove(id){
+				confirm("deleteModal","删除"+moduleName,"确认删除",function(){
+					requestDelete(id,function(){
+						$("#deleteModal").modal("hide")
+						$table.bootstrapTable('refresh')
+					})
+				})
+			}
+			var addHTML;
+			//修改
+			function update(id){
+				editModal("updateModal","修改"+moduleName,addHTML,function(){
+					var data = getFormData($("#addForm"))
+					requestUpdate({id:id,...data},function(res){
+						$("#updateModal").modal("hide")
+						$table.bootstrapTable('refresh')
+					})
+				},function(){
+					initDateTime()
+					initHouse(function(){
+						requestDetail(id,function(data){
+							initFormValue($("#addForm"),data.data)
+						})
+					})
+				})
+			}
+			//添加
+			function add(){
+				editModal("addModal","添加"+moduleName,addHTML,function(){
+					var data = getFormData($("#addForm"))
+					requestAdd(data,function(res){
+						$("#addModal").modal("hide")
+						$table.bootstrapTable('refresh')
+					})
+				},function(){
+					initDateTime()
+					initHouse()
+				})
+			}
+
+			//支付
+			function pay(id){
+				editModal("payModal","支付二维码",'<div id="qrcode"></div>',function(){},function(){
+					console.log("更新二维码")
+					payHouseFee(id,function(res){
+						console.log(res)
+						if(res.code===0){
+							var qrcode = new QRCode(document.getElementById("qrcode"),
+								{
+									text: res.data,
+									width: 128,
+									height: 128,
+									colorDark : "#000000",
+									colorLight : "#ffffff",
+									correctLevel : QRCode.CorrectLevel.H
+								}
+							)
+						}
+					})
+				})
+			}
+
+		 	$(function(){
+		 		addHTML = $("#addHtml").html()
+		 		$("#addHtml").remove();
+				$('#table').bootstrapTable({
+				  ajax: function(params){
+					var pageRequest = {
+						pageNumber: params.data.offset/params.data.limit+1,
+						pageSize: params.data.limit
+					}
+					requestPage(pageRequest,{search:params.data.search},function(data){
+						params.success({rows:data.data.content,total:data.data.total})
+					})
+				  },
+				  sidePagination:'server',
+				  locale: "zh-CN",
+				  pagination: true,
+				  toolbar: "#toolbar",
+				  search: true,
+				  searchHighlight: true,
+				  columns: [{
+					field: 'id',
+					title: '编号'
+				  },{
+					field: 'houseName',
+					title: '房屋'
+				  },{
+					field: 'waterFee',
+					title: '水费'
+				  }, {
+					field: 'electricFee',
+					title: '电费'
+				  }, {
+					field: 'totalFee',
+					title: '总费用'
+				  }, {
+					field: 'startDatetime',
+					title: '开始时间'
+				  }, {
+					field: 'endDatetime',
+					title: '结束时间'
+				  }, {
+					field: 'payDatetime',
+					title: '支付时间'
+				  }, {
+					field: 'remark',
+					title: '备注'
+				  }, {
+					field: 'createTime',
+					title: '创建日期'
+				  }, {
+					field: 'updateTime',
+					title: '更新日期'
+				  },
+				  {
+					title : '操作',
+					field : 'id',
+					align : 'center',
+					formatter : function(value, row, index) {
+						var e = ''
+						var d = ''
+						var p = ""
+						if(userType===1 ){
+							e = '<a class="btn btn-primary btn-sm" href="javascript:void(0);" mce_href="#" title="编辑" onclick="update(\''
+							+ row.id
+							+ '\')"><i class="fa fa-edit"></i></a> ';
+							d = '<a class="btn btn-warning btn-sm" href="javascript:void(0);" title="删除"  mce_href="#" onclick="remove(\''
+								+ row.id
+								+ '\')"><i class="fa fa-minus"></i></a> ';
+
+						}
+						if(userType===2){
+							if(row.status === 1){
+								p = '<a class="btn btn-warning btn-sm" href="javascript:void(0);" title="支付"  mce_href="#" onclick="pay(\''
+									+ row.id
+									+ '\')"><i class="fa fa-shopping-cart"></i></a> ';
+							}
+						}
+						return e + d + p;
+					}
+				  }],
+				})
+				$("#add").on("click",function(){
+					add()
+				})
+
+			})
+		</script>
+		</div>
+	</body>
+</html>

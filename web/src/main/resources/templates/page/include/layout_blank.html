@@ -1,0 +1,14 @@
+<!-- 只引入head，用于弹出页面，如新增、修改等 -->
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.thymeleaf.org">
+    <head>
+        <meta th:replace="page/include/head :: head"/>
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div layout:fragment="content"></div>
+        </div>
+    </body>
+</html>
+

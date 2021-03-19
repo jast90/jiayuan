@@ -1,0 +1,32 @@
+<!-- 后台页面布局，自动包装head、menu、NAV和foot -->
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.thymeleaf.org" >
+    <head>
+        <meta th:replace="page/include/head :: head"/>
+    </head>
+    <body>
+        <header class="navbar navbar-expand flex-column flex-md-row" th:include="page/include/nav :: nav">
+        </header>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-2 col-xl-2 bd-sidebar">
+
+                    <div th:replace="page/include/menu :: menu"></div>
+                </div>
+                <main class="col-md-10 col-xl-10" role="main">
+                    <div layout:fragment="content" style="padding: 15px;height: 700px;"></div>
+                </main>
+
+            </div>
+            <div class="row">
+                <div class="col-md-2 col-xl-2">
+                </div>
+                <main class="col-md-10 col-xl-10">
+                    <div th:include="page/include/foot :: foot"></div>
+                </main>
+            </div>
+        </div>
+    </body>
+</html>
+

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.github.jast90.convenience.mapper.RepairMapper">
+
+    <resultMap id="BaseResultMap" type="io.github.jast90.convenience.entity.Repair">
+        <id column="id" property="id"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from repair
+        where id = #{id}
+    </delete>
+
+    <insert id="insert" parameterType="io.github.jast90.convenience.entity.Repair">
+        insert into repair(house_id,create_user_id,phone,content)
+        values(#{houseId},#{createUserId},#{phone},#{content})
+    </insert>
+
+    <update id="updateByPrimaryKey" parameterType="io.github.jast90.convenience.entity.Repair">
+        update repair
+        set house_id=#{houseId},create_user_id=#{createUserId},phone=#{phone},content=#{content}
+        where id = #{id}
+    </update>
+
+    <select id="selectByPrimaryKey" resultType="io.github.jast90.convenience.entity.Repair"
+            parameterType="java.lang.Long">
+        select id, create_time, update_time, house_id,create_user_id,phone,content
+        from repair
+        where id = #{id}
+    </select>
+
+    <select id="selectAll" resultType="io.github.jast90.convenience.entity.Repair">
+        select id, create_time, update_time, house_id,create_user_id,phone,content
+        from repair
+    </select>
+
+    <select id="selectPage" resultType="io.github.jast90.convenience.entity.Repair">
+        select id, create_time, update_time, house_id,create_user_id,phone,content
+        from repair
+        <where>
+            <if test="condition.search!=null">
+                (content like concat(#{condition.search},"%")
+                or phone like concat(#{condition.search},"%"))
+            </if>
+            <if test="condition.houseId > 0">
+                and house_id=#{condition.houseId}
+            </if>
+        </where>
+        order by id desc
+    </select>
+</mapper>
