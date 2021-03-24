@@ -10,7 +10,7 @@
 # Generation Time: 2021-03-19 07:46:28 +0000
 # ************************************************************
 
-CREATE DATABASE jiayuan_fee CHARACTER SET utf8 COLLATE utf8mb4;
+CREATE DATABASE jiayuan_fee CHARACTER SET utf8;
 
 use jiayuan_fee;
 

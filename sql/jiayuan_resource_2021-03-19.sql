@@ -9,7 +9,7 @@
 # Database: jiayuan_resource
 # Generation Time: 2021-03-19 07:47:42 +0000
 # ************************************************************
-CREATE DATABASE jiayuan_resource CHARACTER SET utf8 COLLATE utf8mb4;
+CREATE DATABASE jiayuan_resource CHARACTER SET utf8;
 
 use jiayuan_resource;
 

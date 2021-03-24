@@ -29,24 +29,26 @@ public class UserHouseService extends BaseService<UserHouseMapper, UserHouse> {
     @Override
     public CommonResult<Page<UserHouse>> queryPage(PageRequest pageRequest, UserHouse entity) {
         CommonResult<Page<UserHouse>> pageCommonResult = super.queryPage(pageRequest, entity);
-        List<Long> houseIds = Lists.newArrayList();
-        Map<Long,UserHouse> houseIdUserHouseMap = new HashMap<>();
-        if(pageCommonResult.getData()!=null && pageCommonResult.getData().getContent()!=null){
+        if(pageCommonResult.getData() != null && pageCommonResult.getData().getContent() != null){
+            List<Long> houseIds = Lists.newArrayList();
+            if(pageCommonResult.getData()!=null && pageCommonResult.getData().getContent()!=null){
+                for (UserHouse userHouse : pageCommonResult.getData().getContent()) {
+                    houseIds.add(userHouse.getHouseId());
+                }
+            }
+            HouseConditionForm conditionForm = new HouseConditionForm();
+            conditionForm.setHouseIds(houseIds);
+            Map<Long,String> houseIdHouseNameMap = new HashMap<>();
+            CommonResult<List<House>> houseListCommonResult = houseClient.queryListByCondition(conditionForm);
+            if(houseListCommonResult.getData() != null){
+                for (House house : houseListCommonResult.getData()) {
+                    houseIdHouseNameMap.put(house.getId(),house.getHouseName());
+                }
+            }
             for (UserHouse userHouse : pageCommonResult.getData().getContent()) {
-                houseIds.add(userHouse.getHouseId());
-                houseIdUserHouseMap.put(userHouse.getHouseId(),userHouse);
+                userHouse.setHouseName(houseIdHouseNameMap.get(userHouse.getHouseId()));
             }
         }
-        HouseConditionForm conditionForm = new HouseConditionForm();
-        conditionForm.setHouseIds(houseIds);
-        CommonResult<List<House>> houseListCommonResult = houseClient.queryListByCondition(conditionForm);
-        if(houseListCommonResult.getData() != null){
-            for (House house : houseListCommonResult.getData()) {
-                houseIdUserHouseMap.get(house.getId())
-                        .setHouseName(house.getHouseName());
-            }
-        }
-
         return pageCommonResult;
     }
 

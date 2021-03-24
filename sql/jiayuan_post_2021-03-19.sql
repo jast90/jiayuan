@@ -10,7 +10,7 @@
 # Generation Time: 2021-03-19 07:47:19 +0000
 # ************************************************************
 
-CREATE DATABASE jiayuan_post CHARACTER SET utf8 COLLATE utf8mb4;
+CREATE DATABASE jiayuan_post CHARACTER SET utf8;
 
 use jiayuan_post;
 
